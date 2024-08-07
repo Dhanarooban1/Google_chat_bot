@@ -1,10 +1,11 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, FunctionComponent } from 'react';
 import { FaUserCircle, FaRobot } from 'react-icons/fa';
 import { FaArrowTurnUp } from 'react-icons/fa6';
 import { GoPlusCircle } from 'react-icons/go';
 import { useChat } from 'ai/react';
 import { EmptyScreen } from './compound/empty-screen';
+
 const exampleMessages = [
   {
     heading: 'What are the',
@@ -28,12 +29,16 @@ const exampleMessages = [
   }
 ];
 
-function MessageList({ onSelect }) {
-  const [selectedMessage, setSelectedMessage] = useState(null);
+interface MessageListProps {
+  onSelect: (message: string) => void;
+}
 
-  const handleItemClick = (message) => {
+const MessageList: FunctionComponent<MessageListProps> = ({ onSelect }) => {
+  const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
+
+  const handleItemClick = (message: string) => {
     setSelectedMessage(message);
-    onSelect(message.message); 
+    onSelect(message);
   };
 
   return (
@@ -42,9 +47,9 @@ function MessageList({ onSelect }) {
         <div
           key={index}
           className={`cursor-pointer rounded-lg border bg-black p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900 ${
-            selectedMessage === message ? 'text-white' : 'text-red'
+            selectedMessage === message.message ? 'text-white' : 'text-red'
           }`}
-          onClick={() => handleItemClick(message)}
+          onClick={() => handleItemClick(message.message)}
         >
           <div className="text-sm font-semibold">{message.heading}</div>
           <div className="text-sm text-zinc-600">{message.subheading}</div>
@@ -52,18 +57,16 @@ function MessageList({ onSelect }) {
       ))}
     </div>
   );
-}
-
-
+};
 
 export default function Chat() {
   const { messages, input, handleInputChange, handleSubmit } = useChat();
 
-  const handleSelectMessage = (message) => {
+  const handleSelectMessage = (message: string) => {
     handleInputChange({ target: { value: message } });
   };
 
-  const handleStartNewSession = (event) => {
+  const handleStartNewSession = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     window.location.reload();
   };
