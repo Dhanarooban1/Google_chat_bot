@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useState, FunctionComponent } from 'react';
 import { FaUserCircle, FaRobot } from 'react-icons/fa';
 import { FaArrowTurnUp } from 'react-icons/fa6';
@@ -63,10 +63,11 @@ export default function Chat() {
   const { messages, input, handleInputChange, handleSubmit } = useChat();
 
   const handleSelectMessage = (message: string) => {
-    handleInputChange({ target: { value: message } });
+    // Update the input directly instead of simulating an event
+    handleInputChange({ target: { value: message } } as React.ChangeEvent<HTMLInputElement>);
   };
 
-  const handleStartNewSession = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleStartNewSession = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     window.location.reload();
   };
@@ -85,7 +86,7 @@ export default function Chat() {
                 {m.role === 'user' ? <FaUserCircle className="inline mr-2" /> : <FaRobot className="inline mr-2" />}
                 {m.content}
               </div>
-              {index < messages.length - 1 && <hr className="border-t border-gray-300 my-2" />} {/* Line separator outside the text */}
+              {index < messages.length - 1 && <hr className="border-t border-gray-300 my-2" />}
             </React.Fragment>
           ))}
         </>
