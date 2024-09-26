@@ -6,6 +6,7 @@ import { GoPlusCircle } from 'react-icons/go';
 import { useChat } from 'ai/react';
 import { EmptyScreen } from './compound/empty-screen';
 
+
 const exampleMessages = [
   {
     heading: 'What are the',
@@ -46,13 +47,15 @@ const MessageList: FunctionComponent<MessageListProps> = ({ onSelect }) => {
       {exampleMessages.map((message, index) => (
         <div
           key={index}
-          className={`cursor-pointer rounded-lg border bg-black p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900 ${
-            selectedMessage === message.message ? 'text-white' : 'text-red'
+          className={`cursor-pointer rounded-lg border p-4 transition-colors duration-200 ${
+            selectedMessage === message.message
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-800 text-gray-200 hover:bg-gray-700'
           }`}
           onClick={() => handleItemClick(message.message)}
         >
           <div className="text-sm font-semibold">{message.heading}</div>
-          <div className="text-sm text-zinc-600">{message.subheading}</div>
+          <div className="text-sm text-gray-400">{message.subheading}</div>
         </div>
       ))}
     </div>
@@ -61,9 +64,9 @@ const MessageList: FunctionComponent<MessageListProps> = ({ onSelect }) => {
 
 export default function Chat() {
   const { messages, input, handleInputChange, handleSubmit } = useChat();
+  
 
   const handleSelectMessage = (message: string) => {
-    // Update the input directly instead of simulating an event
     handleInputChange({ target: { value: message } } as React.ChangeEvent<HTMLInputElement>);
   };
 
@@ -73,52 +76,69 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col w-1/2 py-24 mx-auto stretch">
-      {messages.length > 0 ? (
-        <>
-          {messages.map((m, index) => (
-            <React.Fragment key={m.id}>
+    <div className="flex flex-col min-h-screen bg-gray-900 text-white">
+      <div className="flex-grow w-full max-w-2xl mx-auto px-4 py-8">
+        {messages.length > 0 ? (
+          <div className="space-y-4">
+            {messages.map((m) => (
               <div
-                className={`whitespace-pre-wrap p-2 my-2 border rounded ${
-                  m.role === 'user' ? 'self-start text-right' : 'self-start text-left text-white'
-                } text-medium font-small font-sans`}
+                key={m.id}
+                className={`flex ${
+                  m.role === 'user' ? 'justify-end' : 'justify-start'
+                }`}
               >
-                {m.role === 'user' ? <FaUserCircle className="inline mr-2" /> : <FaRobot className="inline mr-2" />}
-                {m.content}
+                <div
+                  className={`max-w-3/4 p-3 rounded-lg ${
+                    m.role === 'user'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-700 text-gray-200'
+                  }`}
+                >
+                  <div className="flex items-center mb-1">
+                    {m.role === 'user' ? (
+                      <FaUserCircle className="mr-2" />
+                    ) : (
+                      <FaRobot className="mr-2" />
+                    )}
+                    <span className="font-semibold">
+                      {m.role === 'user' ? 'You' : 'AI'}
+                    </span>
+                  </div>
+                  <p className="whitespace-pre-wrap" dangerouslySetInnerHTML = {{ __html: m.content }}></p>
+                </div>
               </div>
-              {index < messages.length - 1 && <hr className="border-t border-gray-300 my-2" />}
-            </React.Fragment>
-          ))}
-        </>
-      ) : (
-        <>
-          <EmptyScreen />
-          <MessageList onSelect={handleSelectMessage} />
-        </>
-      )}
-      <form onSubmit={handleSubmit} className="fixed bottom-0 w-1/2 p-2 mb-8 flex items-center">
-        <div className="flex flex-1 border border-gray-300 rounded shadow-xl">
+            ))}
+          </div>
+        ) : (
+          <>
+            <EmptyScreen />
+            <MessageList onSelect={handleSelectMessage} />
+          </>
+        )}
+      </div>
+      <div className="border-t border-gray-700 bg-gray-800 p-4">
+        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto flex items-center">
           <button
             type="button"
             onClick={handleStartNewSession}
-            className="p-2 bg-gray-600 rounded-r-md hover:text-green-600 focus:text-blue-700 focus:outline-none"
+            className="p-2 text-gray-400 hover:text-white transition-colors duration-200"
           >
-            <GoPlusCircle />
+            <GoPlusCircle size={24} />
           </button>
           <input
-            className="flex-1 p-2 bg-black text-white rounded-l-md focus:outline-none"
+            className="flex-grow mx-2 p-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={input}
-            placeholder="Say something..."
+            placeholder="Type your message..."
             onChange={handleInputChange}
           />
           <button
             type="submit"
-            className="p-2 bg-gray-600 rounded-r-md hover:text-green-600 focus:text-blue-700 focus:outline-none"
+            className="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
           >
-            <FaArrowTurnUp />
+            <FaArrowTurnUp size={20} />
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }
